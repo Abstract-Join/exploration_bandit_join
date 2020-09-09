@@ -4,9 +4,7 @@
 #include <math.h>
 #include <float.h>
 
-#define rTable_SIZE 86090
-#define sTable_SIZE 198103
-#define LIMIT 100000
+
 #define BLOCK_SIZE 32
 
 struct Tuple{
@@ -173,13 +171,13 @@ int checkIfLearningIsPossible(struct BlockInfo blockInfo[], int rBlocksToExplore
         // printf("\nEntropy : %.3f", entropy);
 
     }
-    // printf("\nEntropy : %.3f", entropy);
 
     entropy = -entropy;
 
     //TODO Need to verify this
     float maxEntropyValue = log(rBlocksToExplore);
-    // printf("\nMax Entropy Value : %4f", maxEntropyValue);
+    printf("\nMax Entropy Value : %4f", maxEntropyValue);
+    printf("\nEntropy : %.3f", entropy);
 
     if (entropy > maxEntropyValue * 0.9 || maxEntropyValue *entropy < 0.75) {
         return 0;
@@ -211,10 +209,11 @@ int main(void) {
 
     char *delim = "|";
     char *rTable_path = "./data/s0/customer_cleaned.tbl";
-    char *sTable_path = "./data/s0/order.tbl";
-
-    int rBlocks = get_block_count(rTable_SIZE);
-    int sBlocks = get_block_count(sTable_SIZE);
+    char *sTable_path = "./data/s1/order.tbl";
+    int RTable_SIZE = 86090;
+    int STable_SIZE = 198103;
+    int rBlocks = get_block_count(RTable_SIZE);
+    int sBlocks = get_block_count(STable_SIZE);
     struct Block rTable[rBlocks];
     struct Block sTable[sBlocks];
 
@@ -247,7 +246,7 @@ int main(void) {
     // struct BlockInfo blockInfo[];
     int doLearning = explore(&result, blockInfo, rBlocksToExplore, sBlocksToExplore, rTable, sTable, kFailure, accuracyRate, limit, sExploration);
     
-    if (doLearning == 0) {
+    if (doLearning == 1) {
         int total = 0;
         int i;
         for (i = 0; i < rBlocksToExplore; i++) {
