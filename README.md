@@ -1,1 +1,1 @@
-# tree_join
+# Exploration Based Bandit join
