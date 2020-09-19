@@ -6,6 +6,7 @@
 
 
 #define BLOCK_SIZE 32
+#define LIMIT 10000
 
 struct Tuple{
     int dataPresent;
@@ -169,7 +170,6 @@ int checkIfLearningIsPossible(struct BlockInfo blockInfo[], int rBlocksToExplore
 
         entropy += prob * log(prob);
         // printf("\nEntropy : %.3f", entropy);
-
     }
 
     entropy = -entropy;
@@ -179,7 +179,7 @@ int checkIfLearningIsPossible(struct BlockInfo blockInfo[], int rBlocksToExplore
     printf("\nMax Entropy Value : %4f", maxEntropyValue);
     printf("\nEntropy : %.3f", entropy);
 
-    if (entropy > maxEntropyValue * 0.9 || maxEntropyValue *entropy < 0.75) {
+    if (entropy > maxEntropyValue * 0.9 || maxEntropyValue * 0.6 > entropy) {
         return 0;
     } else {
         return 1; 
@@ -209,10 +209,14 @@ int main(void) {
 
     char *delim = "|";
     char *rTable_path = "./data/s0/customer_cleaned.tbl";
-    char *sTable_path = "./data/s1/order.tbl";
+    char *sTable_path = "./data/s0/order.tbl";
     int RTable_SIZE = 86090;
     int STable_SIZE = 198103;
+    // int RTable_SIZE = 15;
+    // int STable_SIZE = 80;
     int rBlocks = get_block_count(RTable_SIZE);
+    
+
     int sBlocks = get_block_count(STable_SIZE);
     struct Block rTable[rBlocks];
     struct Block sTable[sBlocks];
@@ -228,14 +232,24 @@ int main(void) {
     //     accuracyRate: percentage of reward/join to see of the S Block
     //     limit: Total values of results to return
 
-    float sExploration = 0.25;
+    float sExploration = 0.1;
     float accuracyRate = 0.1;
     float rExploration = 0.1;
-    int kFailure = 5;
-    int limit = 1000;
+    int kFailure = 1;
+    int limit = 10000;
 
     int rBlocksToExplore = rExploration * rBlocks;
-    int sBlocksToExplore = sExploration * sBlocks;
+    
+    // Need to verify this with Arash: Since this formula is for the time horizon
+    // N = T^(2/3)* (log(T)^(1/3) 
+
+    int n = pow(sBlocks, (2.0/3.0)) * pow(log(sBlocks), (1.0/3.0));
+    printf("Total S Blocks to explore : %d", sBlocks);
+
+    printf("\nExploration Based Blocks to explore : %d", n);
+    printf("\n0.1 \% Blocks to explore : %d", (int)(sExploration * sBlocks));
+    
+    int sBlocksToExplore = n;
     printf("\n R Blocks to Explore : %d", rBlocksToExplore);
     printf("\n S Blocks to Explore : %d", sBlocksToExplore);
 
